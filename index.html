@@ -1,0 +1,57 @@
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const box = 20;
+  const rows = canvas.height / box;
+  const cols = canvas.width / box;
+
+  let snake = [{ x: 9 * box, y: 9 * box }];
+  let direction = 'RIGHT';
+  let food = spawnFood();
+  let score = 0;
+  let mouthOpen = false;
+
+  document.addEventListener('keydown', changeDirection);
+
+  function changeDirection(e) {
+    if (e.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
+    else if (e.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
+    else if (e.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
+    else if (e.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
+  }
+
+  function spawnFood() {
+    return {
+      x: Math.floor(Math.random() * cols) * box,
+      y: Math.floor(Math.random() * rows) * box
+    };
+  }
+
+  function drawApple(x, y) {
+    // Apple body
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(x + box / 2, y + box / 2, box / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Apple stem
+    ctx.strokeStyle = 'green';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + box / 2, y + 5);
+    ctx.lineTo(x + box / 2, y);
+    ctx.stroke();
+  }
+
+  function drawSnakeSegment(x, y, isHead) {
+    ctx.fillStyle = 'green';
+    ctx.fillRect(x, y, box, box);
+
+    if (isHead) {
+      // Eyes
+      ctx.fillStyle = 'white';
+      const eyeOffset = 4;
+      const eyeSize = 4;
+      let leftEyeX = x + 4;
+      let rightEyeX = x + box - 8;
